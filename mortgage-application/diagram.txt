@@ -1,0 +1,53 @@
+┌──────────────────────────────┐
+│ CloudEvent arrives           │
+│ ce-type = submitApplication  │
+└──────────┬───────────────────┘
+           │ invokes
+           ▼
+┌──────────────────────────────┐
+│ collectDetails(App a)        │
+│ - Capture applicant info     │
+│ - Upload docs                │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = detailsCollected                 │
+│ ce-source = collectDetails                 │
+└──────────┬─────────────────────────────────┘
+           │ triggers config mapping
+           ▼
+┌──────────────────────────────┐
+│ creditCheck(App a)           │
+│ - Run credit bureau check    │
+│ - Compute score              │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = creditChecked                    │
+│ ce-source = creditCheckMapping             │
+└──────────┬─────────────────────────────────┘
+           │ matches @CloudEventMapping(trigger="creditChecked")
+           ▼
+┌──────────────────────────────┐
+│ underwriting(App a)          │
+│ - Risk models                │
+│ - Approve/reject conditions  │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = underwritten                     │
+│ ce-source = underwriting                   │
+└──────────┬─────────────────────────────────┘
+           │ triggers final handler
+           ▼
+┌──────────────────────────────┐
+│ finalizeLoan(App a)          │
+│ - Approve loan + rate        │
+│ - Notify applicant           │
+└──────────────────────────────┘

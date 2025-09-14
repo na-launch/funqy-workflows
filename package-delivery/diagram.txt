@@ -1,0 +1,53 @@
+┌──────────────────────────────┐
+│ CloudEvent arrives           │
+│ ce-type = orderPlaced        │
+└──────────┬───────────────────┘
+           │ invokes
+           ▼
+┌──────────────────────────────┐
+│ preparePackage(Pkg p)        │
+│ - Pick items from warehouse  │
+│ - Pack + label               │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = orderPlaced.output               │
+│ ce-source = preparePackage                 │
+└──────────┬─────────────────────────────────┘
+           │ triggers config mapping
+           ▼
+┌──────────────────────────────┐
+│ assignCourier(Pkg p)         │
+│ - Find local courier         │
+│ - Assign route               │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = courierAssigned                  │
+│ ce-source = courierMapping                 │
+└──────────┬─────────────────────────────────┘
+           │ matches @CloudEventMapping(trigger="courierAssigned")
+           ▼
+┌──────────────────────────────┐
+│ trackInTransit(Pkg p)        │
+│ - GPS updates                │
+│ - Notify customer live       │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = inTransit                        │
+│ ce-source = trackInTransit                 │
+└──────────┬─────────────────────────────────┘
+           │ triggers final handler
+           ▼
+┌──────────────────────────────┐
+│ deliverPackage(Pkg p)        │
+│ - Mark delivered             │
+│ - Notify customer            │
+└──────────────────────────────┘

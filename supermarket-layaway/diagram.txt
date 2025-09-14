@@ -1,0 +1,53 @@
+┌──────────────────────────────┐
+│ CloudEvent arrives           │
+│ ce-type = startLayaway       │
+└──────────┬───────────────────┘
+           │ invokes
+           ▼
+┌──────────────────────────────┐
+│ reserveItem(Order o)         │
+│ - Mark inventory as held     │
+│ - Assign reservation ID      │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = itemReserved                     │
+│ ce-source = reserveItem                    │
+└──────────┬─────────────────────────────────┘
+           │ triggers config mapping
+           ▼
+┌──────────────────────────────┐
+│ acceptDeposit(Order o)       │
+│ - Record partial payment     │
+│ - Issue receipt              │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = depositReceived                  │
+│ ce-source = paymentMapping                 │
+└──────────┬─────────────────────────────────┘
+           │ matches @CloudEventMapping(trigger="depositReceived")
+           ▼
+┌──────────────────────────────┐
+│ trackPayments(Order o)       │
+│ - Monitor installments       │
+│ - Send reminders             │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = paymentsUpdated                  │
+│ ce-source = trackPayments                  │
+└──────────┬─────────────────────────────────┘
+           │ triggers final handler
+           ▼
+┌──────────────────────────────┐
+│ releaseItem(Order o)         │
+│ - Final payment complete     │
+│ - Customer collects item     │
+└──────────────────────────────┘

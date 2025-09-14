@@ -1,0 +1,53 @@
+┌──────────────────────────────┐
+│ CloudEvent arrives           │
+│ ce-type = submitClaim        │
+└──────────┬───────────────────┘
+           │ invokes
+           ▼
+┌──────────────────────────────┐
+│ validateClaim(Claim c)       │
+│ - Check policy validity      │
+│ - Verify documents           │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = claimValidated                   │
+│ ce-source = validateClaim                  │
+└──────────┬─────────────────────────────────┘
+           │ triggers config mapping
+           ▼
+┌──────────────────────────────┐
+│ assessDamage(Claim c)        │
+│ - Inspect damage evidence    │
+│ - Estimate cost              │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = damageAssessed                   │
+│ ce-source = damageAssessment               │
+└──────────┬─────────────────────────────────┘
+           │ matches @CloudEventMapping(trigger="damageAssessed")
+           ▼
+┌──────────────────────────────┐
+│ approveOrReject(Claim c)     │
+│ - Apply rules                │
+│ - Approve or deny claim      │
+└──────────┬───────────────────┘
+           │ emits
+           ▼
+┌────────────────────────────────────────────┐
+│ CloudEvent emitted                         │
+│ ce-type = claimDecision                    │
+│ ce-source = approveOrReject                │
+└──────────┬─────────────────────────────────┘
+           │ triggers final handler
+           ▼
+┌──────────────────────────────┐
+│ payout(Claim c)              │
+│ - Send funds to customer     │
+│ - Notify claimant            │
+└──────────────────────────────┘
