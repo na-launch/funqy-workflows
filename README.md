@@ -1,7 +1,11 @@
 # Funqy Workflows 🚀
 
-This repository contains sample **Quarkus Funqy Knative Event workflows** across different domains.  
-Each workflow demonstrates an event-driven process with multiple chained steps, using `configChain` mappings and `@CloudEventMapping` annotations.
+Welcome to the **Funqy Workflows Workshop**!  Presented by the Red Hat Launch Team!
+
+This repository showcases how to build **event-driven, serverless applications** using [Quarkus Funqy](https://quarkus.io/guides/funqy) with **Knative Events** on OpenShift.  
+
+Each workflow demonstrates how **CloudEvents** move through multiple chained functions (using `configChain` mappings or `@CloudEventMapping` annotations), modeling real-world processes across different industries.  
+The 
 
 ## Workflows
 
